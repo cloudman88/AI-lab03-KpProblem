@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace KnapsackProblem.GeneticsAlgorithms
 {
-    public enum SelectionMethod 
+    public enum SelectionMethod  
     { 
         Truncation,
         Tournament,
@@ -20,10 +20,10 @@ namespace KnapsackProblem.GeneticsAlgorithms
         TwoPoint,
         Uniform,
         // these are for Nqueens,bin packing problem only (ordered chromosomes)
-        PMX, //Partially Matched
-        OX,  //Ordered
-        CX,  //Cycle 
-        ER   //Edge recombination
+        Pmx, //Partially Matched
+        Ox,  //Ordered
+        Cx,  //Cycle 
+        Er   //Edge recombination
     }
     enum MutationOperator
     {
