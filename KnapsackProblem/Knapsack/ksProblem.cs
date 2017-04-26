@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using KnapsackProblem.GeneticsAlgorithms;
 
 namespace KnapsackProblem.Knapsack
@@ -24,7 +25,63 @@ namespace KnapsackProblem.Knapsack
 
         private void ReadDataFromFile()
         {
-            throw new NotImplementedException();
+            string file = "HP1.DAT";// 
+            using (StreamReader sr = new StreamReader(file))
+            {
+                string line;
+
+                //read num of knapsacks, num of items
+                if ((line = sr.ReadLine()) != null)
+                {
+                    string[] data = line.Split(new string[] { "\t", " " }, StringSplitOptions.RemoveEmptyEntries);
+                    int[] numbers = Array.ConvertAll(data, int.Parse);
+                    _numOfknapsacks = numbers[0];
+                    _numOfItems = numbers[1];
+                }
+
+                //read the items weights
+                int count = 0;
+                while (count < _numOfItems && (line = sr.ReadLine()) != null)
+                {                    
+                    string[] data = line.Split(new string[] { "\t", " " }, StringSplitOptions.RemoveEmptyEntries);
+                    uint[] numbers = Array.ConvertAll(data, uint.Parse);
+                    _weights.AddRange(numbers);
+                    count += numbers.Length;
+                }
+
+                //read capacities
+                count = 0;
+                while (count < _numOfknapsacks && (line = sr.ReadLine()) != null)
+                {
+                    string[] data = line.Split(new string[] { "\t", " " }, StringSplitOptions.RemoveEmptyEntries);
+                    int[] numbers = Array.ConvertAll(data, int.Parse);
+                    _capcities.AddRange(numbers);
+                    count += numbers.Length;
+                }
+
+                //read constrains
+                for (int i = 0; i < _numOfknapsacks; i++)
+                {
+                    count = 0;
+                    List<int> constrain = new List<int>();
+                    while (count < _numOfItems && (line = sr.ReadLine()) != null)
+                    {
+                        string[] data = line.Split(new string[] { "\t", " " }, StringSplitOptions.RemoveEmptyEntries);
+                        int[] numbers = Array.ConvertAll(data, int.Parse);
+                        //Array.Copy(numbers, 0, constrain, numbers.Length, count);
+                        constrain.AddRange(numbers);
+                        count += numbers.Length;
+                    }
+                    _constrains.Add(constrain.ToArray());
+                }
+
+                //read optimal solution  
+                sr.ReadLine();              
+                if ((line = sr.ReadLine()) != null)
+                {
+                    _opt = Int32.Parse(line);
+                }
+            }
         }
 
         public override void init_population()
@@ -33,7 +90,9 @@ namespace KnapsackProblem.Knapsack
             Buffer = new List<KnapsackGen>();
             for (int i = 0; i < GaPopSize; i++)
             {
-                KnapsackGen ksGen = new KnapsackGen(_numOfknapsacks,);
+                KnapsackGen ksGen = new KnapsackGen(_numOfknapsacks,_capcities.ToArray(),_numOfItems,_weights.ToArray(),_constrains);
+                Population.Add(ksGen);
+                Buffer.Add(ksGen);
             }
         }
 

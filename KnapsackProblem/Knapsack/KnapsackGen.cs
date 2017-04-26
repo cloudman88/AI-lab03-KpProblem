@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using KnapsackProblem.GeneticsAlgorithms;
 
@@ -27,9 +26,11 @@ namespace KnapsackProblem.Knapsack
                     Weight = weights[i],
                     Constrains = new int[NumOfKnapsacks],
                 };
-                Array.Copy(constrains[i], item.Constrains, numOfItems);
+                for (int j = 0; j < NumOfKnapsacks; j++)
+                {
+                    item.Constrains[j] = constrains[j][i];
+                }
             }
-
         }
     }
 }

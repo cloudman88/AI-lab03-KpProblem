@@ -1,5 +1,4 @@
-﻿using System;
-using Genetics;
+﻿using KnapsackProblem.GeneticsAlgorithms;
 
 namespace KnapsackProblem
 {
@@ -7,11 +6,14 @@ namespace KnapsackProblem
     {
         static void Main(string[] args)
         {
-            Manager man = new Manager();
-            do
-            {
-                man.Run();
-            } while (Console.ReadKey(true).Key != ConsoleKey.Escape);
+            Knapsack.KsProblem ksp = new Knapsack.KsProblem(CrossoverMethod.Cx,SelectionMethod.Truncation);
+            ksp.init_population();
+
+            //Manager man = new Manager();
+            //do
+            //{
+            //    man.Run();
+            //} while (Console.ReadKey(true).Key != ConsoleKey.Escape);
         }
     }
 }
