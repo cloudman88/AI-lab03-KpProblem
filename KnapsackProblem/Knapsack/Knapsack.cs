@@ -6,35 +6,36 @@ namespace KnapsackProblem.Knapsack
     {
         public int Id;
         public int Capacity;
-        public List<Item> Items;
+        public List<Item> PackedItems;
+        public int Value;
+        public uint Weight;
 
-        public Knapsack(int id,int capcity) //, int[] constr,int n)
+        public Knapsack(int id,int capcity) 
         {
             Id = id;
             Capacity = capcity;
-            //Constrains = new int[n];
-            //Array.Copy(constr,Constrains,n);
-            Items = new List<Item>();
+            Value = 0;
+            Weight = 0;
+            PackedItems = new List<Item>();
         }
-
-        public uint GetTotalWeights()
-        {
-            uint sumWeights = 0;
-            foreach (var item in Items)
-            {
-                sumWeights += item.Weight;
-            }
-            return sumWeights;
-        }
-
-        public int GetTotalValues()
-        {
-            int sumValues = 0;
-            foreach (var item in Items)
-            {
-                sumValues += item.Constrains[Id];
-            }
-            return sumValues;
-        }
+        //public uint GetTotalWeights()
+        //{
+        //    uint sumWeights = 0;
+        //    foreach (var item in PackedItems)
+        //    {
+        //        sumWeights += item.Weight;
+        //    }
+        //    return sumWeights;
+        //}
+        //public int GetTotalValues()
+        //{
+        //    int sumValues = 0;
+        //    foreach (var item in PackedItems)
+        //    {
+        //        sumValues += item.Constrains[Id-1];
+        //    }
+        //    return sumValues;
+        //}
+        
     }
 }

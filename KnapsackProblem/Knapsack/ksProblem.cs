@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Text;
 using KnapsackProblem.GeneticsAlgorithms;
 
 namespace KnapsackProblem.Knapsack
 {
     class KsProblem : GeneticsAlgorithms<KnapsackGen>
     {
-        private int _opt;
+        private uint _opt;
         private int _numOfknapsacks;
         private int _numOfItems;
         private List<int> _capcities;
@@ -79,7 +81,7 @@ namespace KnapsackProblem.Knapsack
                 sr.ReadLine();              
                 if ((line = sr.ReadLine()) != null)
                 {
-                    _opt = Int32.Parse(line);
+                    _opt = UInt32.Parse(line);
                 }
             }
         }
@@ -100,26 +102,80 @@ namespace KnapsackProblem.Knapsack
         {
             foreach (var knapsackGen in Population)
             {
-                foreach (var sack in knapsackGen.Knapsacks)
+                int sum = 0;
+                foreach (var ks in knapsackGen.Knapsacks)
                 {
-                    knapsackGen.Fitness += sack.GetTotalWeights();
+                    ks.PackedItems.Clear();
+                    ks.Value = 0;
+                    ks.Weight = 0;
                 }
+                for (int i = 0; i < _numOfItems; i++)
+                {
+                    if (knapsackGen.ChosenItems[i] == 1)
+                    {
+                        for (int j = 0; j < _numOfknapsacks; j++)
+                        {
+                            Item item = new Item()
+                            {
+                                Weight = _weights[i],
+                                Constrains = _constrains[j]
+                            };
+                            knapsackGen.Knapsacks[j].PackedItems.Add(item);
+                            knapsackGen.Knapsacks[j].Weight += item.Weight;
+                            knapsackGen.Knapsacks[j].Value += item.Constrains[j];                            
+                        }                        
+                    }
+                }
+                if (knapsackGen.Knapsacks.Last().Weight <= _opt)
+                    knapsackGen.Fitness = _opt - knapsackGen.Knapsacks.Last().Weight;
+                else knapsackGen.Fitness = _opt;
             }
+
         }
 
         protected override void Mutate(KnapsackGen member)
         {
-            throw new NotImplementedException();
+            int ipos = Rand.Next() % _numOfItems;
+            int val = (Rand.Next() % 1);
+            member.ChosenItems[ipos] = val;
         }
 
         protected override void mate_by_method(KnapsackGen bufGen, KnapsackGen gen1, KnapsackGen gen2)
         {
-            throw new NotImplementedException();
+            int spos = Rand.Next() % _numOfItems;
+            int spos2 = Rand.Next() % (_numOfItems - spos) + spos;
+            
+            switch (CrosMethod)
+            {
+                case CrossoverMethod.SinglePoint:
+                    Array.Copy(gen1.ChosenItems,bufGen.ChosenItems, spos);
+                    Array.Copy(gen2.ChosenItems,spos+1,bufGen.ChosenItems, spos+1,_numOfItems- spos);
+                    //bufGen.Str = gen1.Str.Substring(0, spos) + gen2.Str.Substring(spos, targetLenght - spos);
+                    break;
+                case CrossoverMethod.TwoPoint:
+                    Array.Copy(gen1.ChosenItems, bufGen.ChosenItems, _numOfItems);
+                    Array.Copy(gen2.ChosenItems, spos + 1, bufGen.ChosenItems, spos + 1, spos2 - spos);
+
+                    //bufGen.Str = gen1.Str.Substring(0, spos) + gen2.Str.Substring(spos, spos2 - spos) + gen1.Str.Substring(spos2, targetLenght - spos2);
+                    break;
+                case CrossoverMethod.Uniform:
+                    //StringBuilder sb = new StringBuilder(StrTarget);
+                    for (int j = 0; j < _numOfItems; j++)
+                    {
+                        // randomlly choose char from either gens    
+                        int genToChoose = Rand.Next() % 2;
+                        bufGen.ChosenItems[j] = (genToChoose == 0) ? gen1.ChosenItems[j] : gen2.ChosenItems[j];
+                    }
+                    //bufGen.Str = sb.ToString();
+                    break;
+            }
         }
 
         protected override Tuple<string, uint> get_best_gen_details(KnapsackGen gen)
         {
-            throw new NotImplementedException();
+            string str = String.Join("", new List<int>(Population[0].ChosenItems).ConvertAll(i => i.ToString()).ToArray());
+            Tuple<string,uint> best = new Tuple<string, uint>(str,Population[0].Fitness);
+            return best;
         }
 
         protected override KnapsackGen get_new_gen()
