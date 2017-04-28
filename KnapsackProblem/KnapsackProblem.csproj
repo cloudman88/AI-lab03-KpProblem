@@ -46,12 +46,15 @@
     <Compile Include="GeneticsAlgorithms\Gen.cs" />
     <Compile Include="GeneticsAlgorithms\GeneticsAlgorithms.cs" />
     <Compile Include="GeneticsAlgorithms\GenHistory.cs" />
-    <Compile Include="Knapsack\Knapsack.cs" />
-    <Compile Include="Knapsack\KnapsackGen.cs" />
-    <Compile Include="Knapsack\KsProblem.cs" />
+    <Compile Include="Tools\Knapsack.cs" />
+    <Compile Include="GeneticsSol\KnapsackGen.cs" />
+    <Compile Include="GeneticsSol\KsProblem.cs" />
+    <Compile Include="HeuristicSol\KnapsackHeuristic.cs" />
+    <Compile Include="HeuristicSol\Node.cs" />
     <Compile Include="Manager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tools\ksIO.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -60,6 +63,10 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>xcopy "$(ProjectDir)ksProblems\*" "$(ProjectDir)$(OutDir)" /Y</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

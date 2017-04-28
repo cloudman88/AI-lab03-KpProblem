@@ -34,7 +34,6 @@ namespace KnapsackProblem.GeneticsAlgorithms
         Inversion,
         Scramble
     }
-
     abstract class GeneticsAlgorithms<T> where T : Gen
     {
         protected readonly Random Rand;
@@ -70,9 +69,8 @@ namespace KnapsackProblem.GeneticsAlgorithms
             SelectMethod = selectionMethod;
             BestGensHistory = new List<GenHistory<T>>(BestGensHistoryTargetSize);
             GaMutationFactor = 1;
-            LocalOptSearchEnabled = false;
+            LocalOptSearchEnabled = true;
         }
-
         public abstract void init_population();
         public virtual void run_algorithm()
         {
@@ -103,7 +101,7 @@ namespace KnapsackProblem.GeneticsAlgorithms
                 {
                     totalIteration = i + 1; // save number of iteration                                                           
                     break;
-                }
+                }                
                 Mate();     // mate the population together
                 swap_population_with_buffer();       // swap buffers
             }
@@ -115,7 +113,6 @@ namespace KnapsackProblem.GeneticsAlgorithms
             {
                 Console.WriteLine("Iterations: " + totalIteration);
             }
-
             Console.WriteLine("\nTimig in milliseconds:");
             Console.WriteLine("Total Ticks " + totalTicks);
             Console.WriteLine("Total Elasped " + totalElasped);

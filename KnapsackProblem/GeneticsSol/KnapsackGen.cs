@@ -9,19 +9,19 @@ namespace KnapsackProblem.Knapsack
     class KnapsackGen : Gen
     {
         public int NumOfKnapsacks;
-        public List<Knapsack> Knapsacks;
+        public List<Tools.Knapsack> Knapsacks;
         public List<Item> Items;
         public int[] ChosenItems;
 
-        public KnapsackGen(int numOfks, int[] capacities, int numOfItems,uint[] weights ,ObservableCollection<int[]> constrains )
+        public KnapsackGen(int numOfks, short[] capacities, int numOfItems, uint[] weights ,ObservableCollection<short[]> constrains )
         {
             NumOfKnapsacks = numOfks;
-            Knapsacks = new List<Knapsack>();
+            Knapsacks = new List<Tools.Knapsack>();
             Items = new List<Item>();
             ChosenItems = new int[numOfItems];            
             for (int i = 1; i <= NumOfKnapsacks; i++)
             {
-                Knapsacks.Add(new Knapsack(i, capacities[i-1]));
+                Knapsacks.Add(new Tools.Knapsack(i, capacities[i-1]));
             }
             for (int i = 0; i < numOfItems; i++)
             {
@@ -50,7 +50,7 @@ namespace KnapsackProblem.Knapsack
                 var chosenItemIndex = rand.Next() % itemsId.Count;
                 result = AddToKnapsacks(Items[chosenItemIndex],chosenItemIndex);
 
-                itemsId.RemoveAt(chosenItemIndex);
+                itemsId.Remove(chosenItemIndex);
             } while (result == true && itemsId.Count > 0);
         }
 

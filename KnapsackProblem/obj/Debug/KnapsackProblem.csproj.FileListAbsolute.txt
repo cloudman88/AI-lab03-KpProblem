@@ -3,4 +3,3 @@ C:\Users\Adam\Studies\AI Lab\Assignments\assignment3\KnapsackProblem\KnapsackPro
 C:\Users\Adam\Studies\AI Lab\Assignments\assignment3\KnapsackProblem\KnapsackProblem\KnapsackProblem\bin\Debug\KnapsackProblem.pdb
 C:\Users\Adam\Studies\AI Lab\Assignments\assignment3\KnapsackProblem\KnapsackProblem\KnapsackProblem\obj\Debug\KnapsackProblem.exe
 C:\Users\Adam\Studies\AI Lab\Assignments\assignment3\KnapsackProblem\KnapsackProblem\KnapsackProblem\obj\Debug\KnapsackProblem.pdb
-C:\Users\Adam\Studies\AI Lab\Assignments\assignment3\KnapsackProblem\KnapsackProblem\KnapsackProblem\obj\Debug\KnapsackProblem.csprojResolveAssemblyReference.cache

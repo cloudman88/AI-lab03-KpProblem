@@ -1,5 +1,7 @@
 ﻿using System;
 using KnapsackProblem.GeneticsAlgorithms;
+using KnapsackProblem.GeneticsSol;
+using KnapsackProblem.HeuristicSol;
 
 namespace KnapsackProblem
 {
@@ -10,9 +12,13 @@ namespace KnapsackProblem
             //Manager man = new Manager();
             do
             {
-                Knapsack.KsProblem ksp = new Knapsack.KsProblem(CrossoverMethod.Uniform,SelectionMethod.Truncation);
-                ksp.init_population();
-                ksp.run_algorithm();
+                //KsProblem ksp = new KsProblem(CrossoverMethod.Uniform, SelectionMethod.Truncation);
+                //ksp.init_population();
+                //ksp.run_algorithm();
+
+                KnapsackHeuristic ksh = new KnapsackHeuristic(SearchAlgorithm.BestFirstSearch, NeglectedConstrain.Capacity);
+                ksh.run_algorithm();
+
                 //man.Run();
             } while (Console.ReadKey(true).Key != ConsoleKey.Escape);
         }

@@ -9,7 +9,6 @@ namespace Genetics
     {
         private CrossoverMethod _crossoverMethod;
         private MutationOperator _mutationOperator;
-        private int _n;
         private SelectionMethod _selectionMethod;
 
         public Manager()
