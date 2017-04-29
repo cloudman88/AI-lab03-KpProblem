@@ -16,7 +16,7 @@ namespace KnapsackProblem
                 //ksp.init_population();
                 //ksp.run_algorithm();
 
-                KnapsackHeuristic ksh = new KnapsackHeuristic(SearchAlgorithm.BestFirstSearch, NeglectedConstrain.Capacity);
+                KsProblemHeuristic ksh = new KsProblemHeuristic(SearchAlgorithm.DepthFirstSearch, NeglectedConstrain.Integrality);
                 ksh.run_algorithm();
 
                 //man.Run();

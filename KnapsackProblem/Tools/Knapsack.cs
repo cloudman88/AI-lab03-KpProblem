@@ -38,4 +38,13 @@ namespace KnapsackProblem.Tools
         //}
         
     }
+
+    public struct Item
+    {
+        public int Id;
+        public uint Weight;
+        public short[] Constrains;
+        public float[] Densities; //used for neglecting integrality constraint
+        public float DensitiesAvg;
+    }
 }

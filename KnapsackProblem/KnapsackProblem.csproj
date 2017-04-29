@@ -48,8 +48,8 @@
     <Compile Include="GeneticsAlgorithms\GenHistory.cs" />
     <Compile Include="Tools\Knapsack.cs" />
     <Compile Include="GeneticsSol\KnapsackGen.cs" />
-    <Compile Include="GeneticsSol\KsProblem.cs" />
-    <Compile Include="HeuristicSol\KnapsackHeuristic.cs" />
+    <Compile Include="GeneticsSol\KsProblemGenetics.cs" />
+    <Compile Include="HeuristicSol\KsProblemHeuristic.cs" />
     <Compile Include="HeuristicSol\Node.cs" />
     <Compile Include="Manager.cs" />
     <Compile Include="Program.cs" />

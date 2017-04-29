@@ -3,32 +3,33 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using KnapsackProblem.GeneticsAlgorithms;
+using KnapsackProblem.Tools;
 
-namespace KnapsackProblem.Knapsack
+namespace KnapsackProblem.GeneticsSol
 {
     class KnapsackGen : Gen
     {
         public int NumOfKnapsacks;
-        public List<Tools.Knapsack> Knapsacks;
+        public List<Knapsack> Knapsacks;
         public List<Item> Items;
         public int[] ChosenItems;
 
         public KnapsackGen(int numOfks, short[] capacities, int numOfItems, uint[] weights ,ObservableCollection<short[]> constrains )
         {
             NumOfKnapsacks = numOfks;
-            Knapsacks = new List<Tools.Knapsack>();
+            Knapsacks = new List<Knapsack>();
             Items = new List<Item>();
             ChosenItems = new int[numOfItems];            
             for (int i = 1; i <= NumOfKnapsacks; i++)
             {
-                Knapsacks.Add(new Tools.Knapsack(i, capacities[i-1]));
+                Knapsacks.Add(new Knapsack(i, capacities[i-1]));
             }
             for (int i = 0; i < numOfItems; i++)
             {
                 Item item = new Item()
                 {
                     Weight = weights[i],
-                    Constrains = new int[NumOfKnapsacks],
+                    Constrains = new short[NumOfKnapsacks],
                 };
                 for (int j = 0; j < NumOfKnapsacks; j++)
                 {
@@ -61,7 +62,6 @@ namespace KnapsackProblem.Knapsack
             {
                 if (ks.Value + item.Constrains[ks.Id-1] > ks.Capacity) return false;                
             }
-
             // add item to all Knapsacks
             foreach (var ks in Knapsacks)
             {
@@ -70,14 +70,8 @@ namespace KnapsackProblem.Knapsack
                 ks.Weight += item.Weight;
                 ChosenItems[index] = 1;
             }
-
             return true;
         }
     }
 }
 
-public struct Item
-{
-    public uint Weight;
-    public int[] Constrains;
-}

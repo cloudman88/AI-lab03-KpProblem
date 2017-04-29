@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using KnapsackProblem.GeneticsAlgorithms;
-using KnapsackProblem.Knapsack;
 using KnapsackProblem.Tools;
 
 namespace KnapsackProblem.GeneticsSol
 {
-    class KsProblem : GeneticsAlgorithms<KnapsackGen>
+    class KsProblemGenetics : GeneticsAlgorithms<KnapsackGen>
     {
         private readonly uint _opt;
         private readonly int _numOfknapsacks;
@@ -17,7 +16,7 @@ namespace KnapsackProblem.GeneticsSol
         private readonly List<uint> _weights;
         private readonly ObservableCollection<short[]> _constrains;
 
-        public KsProblem(CrossoverMethod crossMethod, SelectionMethod selectionMethod) : base(crossMethod, selectionMethod)
+        public KsProblemGenetics(CrossoverMethod crossMethod, SelectionMethod selectionMethod) : base(crossMethod, selectionMethod)
         {
             _capcities = new List<short>();
             _weights = new List<uint>();
@@ -55,7 +54,7 @@ namespace KnapsackProblem.GeneticsSol
                         Item item = new Item()
                         {
                             Weight = _weights[i],
-                            Constrains = new int[_numOfknapsacks]
+                            Constrains = new short[_numOfknapsacks]
                         };
                         for (int k = 0; k < _numOfknapsacks; k++)
                         {
