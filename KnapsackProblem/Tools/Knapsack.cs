@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace KnapsackProblem.Tools
 {
@@ -17,26 +18,7 @@ namespace KnapsackProblem.Tools
             Value = 0;
             Weight = 0;
             PackedItems = new List<Item>();
-        }
-        //public uint GetTotalWeights()
-        //{
-        //    uint sumWeights = 0;
-        //    foreach (var item in PackedItems)
-        //    {
-        //        sumWeights += item.Weight;
-        //    }
-        //    return sumWeights;
-        //}
-        //public int GetTotalValues()
-        //{
-        //    int sumValues = 0;
-        //    foreach (var item in PackedItems)
-        //    {
-        //        sumValues += item.Constrains[Id-1];
-        //    }
-        //    return sumValues;
-        //}
-        
+        }        
     }
 
     public struct Item

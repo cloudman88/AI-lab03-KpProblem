@@ -46,8 +46,8 @@ namespace KnapsackProblem.GeneticsAlgorithms
         protected const uint AgeThreshold = 20;
         protected int BestGensHistoryTargetSize = 20;
         protected const int Beta = 12;
-        protected const int AvgMaxDif = 3;
-        protected const int StdDevMaxDif = 3;
+        protected const int AvgMaxDif = 30;
+        protected const int StdDevMaxDif = 30;
 
         protected double GaMutationFactor;
         protected int Alpha;
@@ -161,6 +161,7 @@ namespace KnapsackProblem.GeneticsAlgorithms
                     {
                         HyperMutations(true); //reset mutation rate factor
                         Console.WriteLine("Local optima seems to be over at iteration " + (index + 1));
+                        HyperMutWasCalled = false;
                     }
                     BestGensHistory.Clear();
                 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using KnapsackProblem.GeneticsAlgorithms;
+using KnapsackProblem.HeuristicSol;
 using KnapsackProblem.Tools;
 
 namespace KnapsackProblem.GeneticsSol
@@ -21,8 +22,8 @@ namespace KnapsackProblem.GeneticsSol
             _capcities = new List<short>();
             _weights = new List<uint>();
             _constrains = new ObservableCollection<short[]>();
-            string filePath = "PET4.DAT";
-            ksIO.ReadDataFromFile(filePath,ref _numOfknapsacks,ref _numOfItems ,_weights,_capcities,_constrains,ref _opt);
+            string filePath = "hp1.DAT";
+            KsProblem.ReadDataFromFile(filePath,ref _numOfknapsacks,ref _numOfItems ,_weights,_capcities,_constrains,ref _opt);
         }
 
         public override void init_population()

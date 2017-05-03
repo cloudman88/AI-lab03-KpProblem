@@ -124,8 +124,7 @@ namespace Genetics
 
             } while (input <= 0 || input > selectionList.Count);
             _selectionMethod = selectionList[input];
-        }
-     
+        }     
 
     }
 }

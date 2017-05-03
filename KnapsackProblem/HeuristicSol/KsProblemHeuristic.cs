@@ -16,90 +16,68 @@ namespace KnapsackProblem.HeuristicSol
         DepthFirstSearch,
         BestFirstSearch
     }
-    class KsProblemHeuristic
+    enum KsProbelmFiles //the .dat files containing the knapsack problems
+    {
+        Flei,
+        Hp3,
+        Pb5,       
+        Pet2,
+        Pet3,
+        Pet4,       
+    }
+    class KsProblemHeuristic : KsProblem
     {
         private uint _counter;
         private uint _estimationBound;
-        private readonly uint _opt;
-        private readonly int _numOfknapsacks;
-        private readonly int _numOfItems;
-        private readonly List<short> _capcities;
-        private readonly List<uint> _weights;
-        private readonly List<Item> _items;
-        private readonly ObservableCollection<short[]> _constrains;
         private readonly SearchAlgorithm _searchAlgorithm;
-        private readonly NeglectedConstrain _neglectedConstrain;
-        
+        private readonly NeglectedConstrain _neglectedConstrain;        
         private string _chosenItems; //binary string representing if item x was chosen in the solution
         private Node _best;
-
+        
         public KsProblemHeuristic(SearchAlgorithm searchAlgorithm,NeglectedConstrain neglectedConstrain)
         {
             _counter = 0;
-            _weights = new List<uint>();
-            _capcities = new List<short>();
-            _constrains = new ObservableCollection<short[]>();
-            _items = new List<Item>();
-            _chosenItems = "";
-            string filePath = "pet3.DAT";
-            ksIO.ReadDataFromFile(filePath,ref _numOfknapsacks,ref _numOfItems,_weights,_capcities,_constrains,ref _opt);
+            _chosenItems = "";            
             _searchAlgorithm = searchAlgorithm;
             _neglectedConstrain = neglectedConstrain;
         }
 
         public void run_algorithm()
         {
-            switch (_neglectedConstrain)
+            var ksProbelms = Enum.GetValues(typeof(KsProbelmFiles)).Cast<KsProbelmFiles>().Select(x => x.ToString()).ToArray();
+            foreach (var problem in ksProbelms)
             {
-                case NeglectedConstrain.Capacity:
-                    _estimationBound = (uint)_weights.Sum(num => num);
-                    break;
-                case NeglectedConstrain.Integrality:
-                    BuildItemsList();
-                    _estimationBound = calc_estimate_neglecting_integrality();
-                    break;
-            }
-            _best = new Node(0, _numOfknapsacks, _capcities.ToArray(), 0, 0);
-            short[] rooms = new short[_numOfknapsacks];
-            Array.Copy(_capcities.ToArray(), rooms, _numOfknapsacks);
-            Node root = new Node(0, _numOfknapsacks, rooms, _estimationBound, 0);
-            //solving while iterating between Branch and Bound
-            switch (_searchAlgorithm)
-            {
-                case SearchAlgorithm.BestFirstSearch:
-                    BestFirstSearch(root);
-                    break;
-                case SearchAlgorithm.DepthFirstSearch:
-                    DepthFirstSearch(root);
-                    break;
-            }
-            print_result_details();
-        }
-
-        private void BuildItemsList()
-        {
-            for (int i = 0; i < _numOfItems; i++)
-            {
-                Item item = new Item()
+                _chosenItems = "";
+               ReadDataFromFile(problem + ".dat");
+                switch (_neglectedConstrain)
                 {
-                    Constrains = new short[_numOfknapsacks],
-                    Densities = new float[_numOfknapsacks],
-                    DensitiesAvg = 0,
-                    Weight = _weights[i]
-                };
-                for (int j = 0; j < _numOfknapsacks; j++)
-                {
-                    item.Constrains[j] = _constrains[j][i];
-                    if (_constrains[j][i] != 0) item.Densities[j] += (float)_weights[i] / _constrains[j][i];
+                    case NeglectedConstrain.Capacity:
+                        _estimationBound = (uint) Weights.Sum(num => num);
+                        break;
+                    case NeglectedConstrain.Integrality:
+                        BuildItemsList(true);
+                        _estimationBound = calc_estimate_neglecting_integrality();
+                        break;
                 }
-                item.DensitiesAvg = item.Densities.Average();
-                _items.Add(item);
+                _best = new Node(0, NumOfknapsacks, Capcities.ToArray(), 0, 0);
+                short[] rooms = new short[NumOfknapsacks];
+                Array.Copy(Capcities.ToArray(), rooms, NumOfknapsacks);
+                Node root = new Node(0, NumOfknapsacks, rooms, _estimationBound, 0);
+                //solving while iterating between Branch and Bound
+                switch (_searchAlgorithm)
+                {
+                    case SearchAlgorithm.BestFirstSearch:
+                        BestFirstSearch(root);
+                        break;
+                    case SearchAlgorithm.DepthFirstSearch:
+                        DepthFirstSearch(root);
+                        break;
+                }
+                print_result_details();
             }
         }
-
         private uint calc_estimate_neglecting_integrality(string chosenItems = "")
         {
-            // pre work - calculation the density: Vi/Wi for each knapsack
             double estimateBound = 0;
             List<Item> items = new List<Item>();
             int count = 0;
@@ -116,21 +94,21 @@ namespace KnapsackProblem.HeuristicSol
                 {
                     if (numbers[i] == 1)
                     {
-                        items.Add(_items[i]);
+                        items.Add(Items[i]);
                     }
                 }
             }            
-            for (int i = count; i < _numOfItems; i++)
+            for (int i = count; i < NumOfItems; i++)
             {
-                items.Add(_items[i]);
+                items.Add(Items[i]);
             }
             var itemsSorted = items.OrderByDescending(x => x.DensitiesAvg);     
-            short[] rooms = new short[_numOfknapsacks];
-            Array.Copy(_capcities.ToArray(), rooms, _numOfknapsacks);
+            short[] rooms = new short[NumOfknapsacks];
+            Array.Copy(Capcities.ToArray(), rooms, NumOfknapsacks);
             foreach (var item in itemsSorted)
             {
                 bool canBeAddToAllSacks = true;
-                for (int j = 0; j < _numOfknapsacks; j++)
+                for (int j = 0; j < NumOfknapsacks; j++)
                 {
                     if (rooms[j] <item.Constrains[j])
                     {
@@ -140,7 +118,7 @@ namespace KnapsackProblem.HeuristicSol
                 }
                 if (canBeAddToAllSacks == true)
                 {
-                    for (int j = 0; j < _numOfknapsacks; j++)
+                    for (int j = 0; j < NumOfknapsacks; j++)
                     {
                         rooms[j] = (short)(rooms[j] - item.Constrains[j]);
                     }
@@ -149,7 +127,7 @@ namespace KnapsackProblem.HeuristicSol
                 else //add fraction
                 {
                     double fraction = Int16.MaxValue;
-                    for (int j = 0; j < _numOfknapsacks; j++)
+                    for (int j = 0; j < NumOfknapsacks; j++)
                     {
                         if (item.Constrains[j] != 0)
                         {
@@ -163,28 +141,27 @@ namespace KnapsackProblem.HeuristicSol
             }
             return (uint) estimateBound;
         }
-
         private void DepthFirstSearch(Node root, string res = "")
         {
             if (root == null) return ;
             if (root.check_rooms() == false) return ;
-            if (root.Level < _numOfItems)
+            if (root.Level < NumOfItems)
             {
-                short[] newRooms = new short[_numOfknapsacks];
-                Array.Copy(root.Rooms, newRooms, _numOfknapsacks);
-                for (int i = 0; i < _numOfknapsacks; i++)
+                short[] newRooms = new short[NumOfknapsacks];
+                Array.Copy(root.Rooms, newRooms, NumOfknapsacks);
+                for (int i = 0; i < NumOfknapsacks; i++)
                 {
-                    newRooms[i] = (short) (newRooms[i] - _constrains[i][root.Level]);
+                    newRooms[i] = (short) (newRooms[i] - Constrains[i][root.Level]);
                 }
                 // allocation of the node's sons is exceuted only when necessary 
-                root.Left = new Node((root.Value + _weights[root.Level]), _numOfknapsacks, newRooms, root.Estimate, (byte)(root.Level + 1));
+                root.Left = new Node((root.Value + Weights[root.Level]), NumOfknapsacks, newRooms, root.Estimate, (byte)(root.Level + 1));
                 uint est = 0;
                 if (_neglectedConstrain.Equals(NeglectedConstrain.Integrality))
                 {
                     est = calc_estimate_neglecting_integrality(res +"0");
                 }
-                else est = (root.Estimate - _weights[root.Level]);
-                root.Right = new Node(root.Value, _numOfknapsacks, root.Rooms,est, (byte) (root.Level + 1));
+                else est = (root.Estimate - Weights[root.Level]);
+                root.Right = new Node(root.Value, NumOfknapsacks, root.Rooms,est, (byte) (root.Level + 1));
                 DepthFirstSearch(root.Left ,res+ "1 ");
                 DepthFirstSearch(root.Right,res+ "0 ");
             }
@@ -197,31 +174,29 @@ namespace KnapsackProblem.HeuristicSol
                     _chosenItems = string.Copy(res);
                 }
             }
-        }
-
-        private void RemoveItemById(object items, byte level)
-        {
-            throw new NotImplementedException();
-        }
-
+        }      
         private void BestFirstSearch(Node root,string res="")
         {
             if (root == null) return;
             if (root.check_rooms() == false) return;
-            if (root.Level < _numOfItems)
+            if (root.Level < NumOfItems)
             {
-                if (root.Estimate > _best.Estimate)
+                if (root.Estimate >= _best.Estimate)
                 {
-                    short[] newRooms = new short[_numOfknapsacks];
-                    Array.Copy(root.Rooms, newRooms, _numOfknapsacks);
-                    for (int i = 0; i < _numOfknapsacks; i++)
+                    short[] newRooms = new short[NumOfknapsacks];
+                    Array.Copy(root.Rooms, newRooms, NumOfknapsacks);
+                    for (int i = 0; i < NumOfknapsacks; i++)
                     {
-                        newRooms[i] = (short)(newRooms[i] - _constrains[i][root.Level]);
+                        newRooms[i] = (short)(newRooms[i] - Constrains[i][root.Level]);
                     }
-
-                    root.Left = new Node((root.Value + _weights[root.Level]), _numOfknapsacks, newRooms, root.Estimate, (byte)(root.Level + 1));
-                    root.Right = new Node(root.Value, _numOfknapsacks, root.Rooms,
-                                            (root.Estimate - _weights[root.Level]), (byte)(root.Level + 1));
+                    root.Left = new Node((root.Value + Weights[root.Level]), NumOfknapsacks, newRooms, root.Estimate, (byte)(root.Level + 1));
+                    uint est = 0;
+                    if (_neglectedConstrain.Equals(NeglectedConstrain.Integrality))
+                    {
+                        est = calc_estimate_neglecting_integrality(res + "0");
+                    }
+                    else est = (root.Estimate - Weights[root.Level]);
+                    root.Right = new Node(root.Value, NumOfknapsacks, root.Rooms, est, (byte)(root.Level + 1));
                     BestFirstSearch(root.Left,res+ "1 ");
                     BestFirstSearch(root.Right, res + "0 ");                    
                 }
@@ -236,7 +211,6 @@ namespace KnapsackProblem.HeuristicSol
                 }
             }
         }
-
         private void print_result_details()
         {
             Console.WriteLine("Best node:");
@@ -249,6 +223,92 @@ namespace KnapsackProblem.HeuristicSol
             Console.WriteLine("Rooms: "+ rooms);
             Console.WriteLine("Estimate: "+ _best.Estimate);
             Console.WriteLine("Chosen items : "+ _chosenItems);
+            Console.WriteLine("Optimum solution : "+ Opt+"\n");
         }
     }
 }
+//private void BuildItemsList()
+//{
+//    Items.Clear();
+//    for (int i = 0; i < NumOfItems; i++)
+//    {
+//        Item item = new Item()
+//        {
+//            Constrains = new short[NumOfknapsacks],
+//            Densities = new float[NumOfknapsacks],
+//            DensitiesAvg = 0,
+//            Weight = Weights[i]
+//        };
+//        for (int j = 0; j < NumOfknapsacks; j++)
+//        {
+//            item.Constrains[j] = Constrains[j][i];
+//            if (Constrains[j][i] != 0)
+//                item.Densities[j] += (float) Weights[i]/Constrains[j][i];
+//            else
+//                item.Densities[j] += float.MaxValue; //if constrain is zero, then most weight per constrain is optimal
+//        }
+//        item.DensitiesAvg = item.Densities.Average();
+//        Items.Add(item);
+//    }
+//}
+
+//enum KsProbelms //the .dat files containing the knapsack problems
+//{
+//    Flei,
+//    Hp1,
+//    Hp2,
+//    Hp3,
+//    Pb1,
+//    Pb2,
+//    Pb3,
+//    Pb4,
+//    Pb5,
+//    Pb6,
+//    Pb7,
+//    Pet2,
+//    Pet3,
+//    Pet4,
+//    Pet5,
+//    Pet6,
+//    Pet7,
+//    Sento1,
+//    Sento2,
+//    Weing1,
+//    Weing2,
+//    Weing3,
+//    Weing4,
+//    Weing5,
+//    Weing6,
+//    Weing7,
+//    Weing8,
+//    Weish01,
+//    Weish02,
+//    Weish03,
+//    Weish04,
+//    Weish05,
+//    Weish06,
+//    Weish07,
+//    Weish08,
+//    Weish09,
+//    Weish10,
+//    Weish11,
+//    Weish12,
+//    Weish13,
+//    Weish14,
+//    Weish15,
+//    Weish16,
+//    Weish17,
+//    Weish18,
+//    Weish19,
+//    Weish20,
+//    Weish21,
+//    Weish22,
+//    Weish23,
+//    Weish24,
+//    Weish25,
+//    Weish26,
+//    Weish27,
+//    Weish28,
+//    Weish29,
+//    Weish30
+//}
