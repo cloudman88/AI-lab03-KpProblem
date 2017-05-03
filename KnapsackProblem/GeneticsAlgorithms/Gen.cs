@@ -4,7 +4,6 @@
     {
         public uint Fitness { get; set; }
         public uint Age { get; set; }
-
         protected Gen()
         {
             Age = 0;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using KnapsackProblem.GeneticsAlgorithms;
-using KnapsackProblem.HeuristicSol;
 using KnapsackProblem.Tools;
 
 namespace KnapsackProblem.GeneticsSol
@@ -15,29 +14,47 @@ namespace KnapsackProblem.GeneticsSol
         private readonly int _numOfItems;
         private readonly List<short> _capcities;
         private readonly List<uint> _weights;
+        private readonly List<Item> _items;
         private readonly ObservableCollection<short[]> _constrains;
 
         public KsProblemGenetics(CrossoverMethod crossMethod, SelectionMethod selectionMethod) : base(crossMethod, selectionMethod)
         {
             _capcities = new List<short>();
             _weights = new List<uint>();
+            _items = new List<Item>();
             _constrains = new ObservableCollection<short[]>();
             string filePath = "hp1.DAT";
             KsProblem.ReadDataFromFile(filePath,ref _numOfknapsacks,ref _numOfItems ,_weights,_capcities,_constrains,ref _opt);
+            BuildItemsList();
         }
 
+        private void BuildItemsList()
+        {
+            for (int i = 0; i < _numOfItems; i++)
+            {
+                Item item = new Item()
+                {
+                    Weight = _weights[i],
+                    Constrains = new short[_numOfknapsacks],
+                };
+                for (int j = 0; j < _numOfknapsacks; j++)
+                {
+                    item.Constrains[j] = _constrains[j][i];
+                }
+                _items.Add(item);
+            }
+        }
         public override void init_population()
         {
             Population = new List<KnapsackGen>();
             Buffer = new List<KnapsackGen>();
             for (int i = 0; i < GaPopSize; i++)
             {
-                KnapsackGen ksGen = new KnapsackGen(_numOfknapsacks,_capcities.ToArray(),_numOfItems,_weights.ToArray(),_constrains);
+                KnapsackGen ksGen = new KnapsackGen(_numOfknapsacks,_capcities.ToArray(),_numOfItems,_items);
                 Population.Add(ksGen);
                 Buffer.Add(ksGen);
             }
         }
-
         protected override void calc_fitness()
         {
             foreach (var knapsackGen in Population)
@@ -74,13 +91,13 @@ namespace KnapsackProblem.GeneticsSol
                 {
                     if (ks.Value > ks.Capacity) capcityExceeded = true;
                 }
-                //once mate had done, the knapsack  items may have exceed its capcity, fitness will calculated accordingly
+                //once mate had done, the knapsack  items may have exceed its capcity,
+                //fitness will calculated accordingly
                 if (knapsackGen.Knapsacks.Last().Weight > _opt || capcityExceeded==true)  
                     knapsackGen.Fitness = _opt;
                 else knapsackGen.Fitness = _opt - knapsackGen.Knapsacks.Last().Weight;
             }
         }
-
         protected override void Mutate(KnapsackGen member)
         {
             int ipos = Rand.Next() % _numOfItems;

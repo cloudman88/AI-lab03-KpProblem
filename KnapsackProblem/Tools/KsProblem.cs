@@ -22,16 +22,14 @@ namespace KnapsackProblem.Tools
             Weights = new List<uint>();
             Capcities = new List<short>();
             Constrains = new ObservableCollection<short[]>();
-        }
-        
-        public static void ReadDataFromFile(string filePath, ref int numOfknapsacks, ref int numOfItems, List<uint> weights,
-            List<short> capcities, ObservableCollection<short[]> constrains, ref uint opt)
+        }        
+        public static void ReadDataFromFile(string filePath, ref int numOfknapsacks,
+                            ref int numOfItems, List<uint> weights,List<short> capcities, 
+                                ObservableCollection<short[]> constrains, ref uint opt)
         {
-
             using (StreamReader sr = new StreamReader(filePath))
             {
                 string line;
-
                 //read num of knapsacks, num of items
                 if ((line = sr.ReadLine()) != null)
                 {
@@ -92,7 +90,6 @@ namespace KnapsackProblem.Tools
                 }
             }
         }
-
         protected void ReadDataFromFile(string filePath)
         {
 
@@ -160,7 +157,6 @@ namespace KnapsackProblem.Tools
                 }
             }
         }
-
         protected void BuildItemsList(bool calcDensity)
         {
             Items.Clear();

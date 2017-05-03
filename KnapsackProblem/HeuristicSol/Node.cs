@@ -21,7 +21,6 @@ namespace KnapsackProblem.HeuristicSol
             Right = null;
             Level = lvl;
         }
-
         public Node(Node root)
         {
             Value = root.Value;
@@ -32,7 +31,6 @@ namespace KnapsackProblem.HeuristicSol
             Right = root.Right;
             Level = root.Level;
         }
-
         public bool check_rooms() //used to check if a node has a sack with overweight
         {
             foreach (var room in Rooms)

@@ -11,51 +11,35 @@ namespace KnapsackProblem.GeneticsSol
     {
         public int NumOfKnapsacks;
         public List<Knapsack> Knapsacks;
-        public List<Item> Items;
         public int[] ChosenItems;
 
-        public KnapsackGen(int numOfks, short[] capacities, int numOfItems, uint[] weights ,ObservableCollection<short[]> constrains )
+        public KnapsackGen(int numOfks, short[] capacities, int numOfItems,List<Item> items  )
         {
             NumOfKnapsacks = numOfks;
             Knapsacks = new List<Knapsack>();
-            Items = new List<Item>();
             ChosenItems = new int[numOfItems];            
             for (int i = 1; i <= NumOfKnapsacks; i++)
             {
                 Knapsacks.Add(new Knapsack(i, capacities[i-1]));
-            }
-            for (int i = 0; i < numOfItems; i++)
-            {
-                Item item = new Item()
-                {
-                    Weight = weights[i],
-                    Constrains = new short[NumOfKnapsacks],
-                };
-                for (int j = 0; j < NumOfKnapsacks; j++)
-                {
-                    item.Constrains[j] = constrains[j][i];
-                }
-                Items.Add(item);
-            }
-            PackItemsRandomlly();
+            }           
+            PackItemsRandomlly(items);
         }
 
-        public void PackItemsRandomlly()
+        public void PackItemsRandomlly(List<Item> items)
         {
             bool result;
             Random rand = new Random();
-            var numOfItems = Items.Count;
-            List<int> itemsId = Enumerable.Range(0, numOfItems).ToList();
+            List<int> itemsId = Enumerable.Range(0, items.Count).ToList();
             do
             {
                 var chosenItemIndex = rand.Next() % itemsId.Count;
-                result = AddToKnapsacks(Items[chosenItemIndex],chosenItemIndex);
-
+                //try to add item to the knapsack
+                result = AddItemToKnapsacks(items[chosenItemIndex],chosenItemIndex); 
                 itemsId.Remove(chosenItemIndex);
             } while (result == true && itemsId.Count > 0);
         }
 
-        private bool AddToKnapsacks(Item item, int index)
+        private bool AddItemToKnapsacks(Item item, int index)
         {
             //check if adding the item wont exceed capcity of one of the knapsacks
             foreach (var ks in Knapsacks)

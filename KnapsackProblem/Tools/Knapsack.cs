@@ -27,6 +27,6 @@ namespace KnapsackProblem.Tools
         public uint Weight;
         public short[] Constrains;
         public float[] Densities; //used for neglecting integrality constraint
-        public float DensitiesAvg;
+        public float DensitiesAvg; //used for neglecting integrality constraint
     }
 }

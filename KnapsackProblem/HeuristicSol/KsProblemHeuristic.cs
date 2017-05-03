@@ -27,7 +27,6 @@ namespace KnapsackProblem.HeuristicSol
     }
     class KsProblemHeuristic : KsProblem
     {
-        private uint _counter;
         private uint _estimationBound;
         private readonly SearchAlgorithm _searchAlgorithm;
         private readonly NeglectedConstrain _neglectedConstrain;        
@@ -36,7 +35,6 @@ namespace KnapsackProblem.HeuristicSol
         
         public KsProblemHeuristic(SearchAlgorithm searchAlgorithm,NeglectedConstrain neglectedConstrain)
         {
-            _counter = 0;
             _chosenItems = "";            
             _searchAlgorithm = searchAlgorithm;
             _neglectedConstrain = neglectedConstrain;
@@ -167,7 +165,6 @@ namespace KnapsackProblem.HeuristicSol
             }
             else
             {
-                _counter++;
                 if (_best.Value < root.Value)
                 {
                     _best = new Node(root);
@@ -203,7 +200,6 @@ namespace KnapsackProblem.HeuristicSol
             }
             else
             {
-                _counter++;
                 if (_best.Value < root.Value)
                 {
                     _best = new Node(root);
