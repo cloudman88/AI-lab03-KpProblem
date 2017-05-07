@@ -8,8 +8,6 @@ namespace KnapsackProblem.HeuristicSol
         public byte Level;
         public uint Value;
         public uint Estimate;        
-        public Node Left;
-        public Node Right;
 
         public Node(uint value,int n,short[] rooms, uint estimate, byte lvl)
         {
@@ -17,8 +15,6 @@ namespace KnapsackProblem.HeuristicSol
             Rooms = new short[n];
             Array.Copy(rooms,Rooms,n);
             Estimate = estimate;
-            Left = null;
-            Right = null;
             Level = lvl;
         }
         public Node(Node root)
@@ -27,11 +23,9 @@ namespace KnapsackProblem.HeuristicSol
             Rooms = new short[root.Rooms.Length];
             Array.Copy(root.Rooms, Rooms, root.Rooms.Length);
             Estimate = root.Estimate;
-            Left = root.Left;
-            Right = root.Right;
             Level = root.Level;
         }
-        public bool check_rooms() //used to check if a node has a sack with overweight
+        public bool check_rooms() //check if a node has at least one sack with overweight
         {
             foreach (var room in Rooms)
             {

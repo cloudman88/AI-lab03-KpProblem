@@ -1,6 +1,8 @@
 ﻿using System;
+using KnapsackProblem.DynamicSol;
 using KnapsackProblem.GeneticsAlgorithms;
 using KnapsackProblem.GeneticsSol;
+using KnapsackProblem.HeuristicSol;
 
 namespace KnapsackProblem
 {
@@ -11,16 +13,16 @@ namespace KnapsackProblem
             //Manager man = new Manager();
             do
             {
-                KsProblemGenetics ksp = new KsProblemGenetics(CrossoverMethod.Uniform, SelectionMethod.Truncation);
-                ksp.init_population();
-                ksp.run_algorithm();
+                //KsProblemGenetics ksp = new KsProblemGenetics(CrossoverMethod.Uniform, SelectionMethod.Truncation);
+                //ksp.init_population();
+                //ksp.run_algorithm();
 
-                //KsProblemHeuristic ksh = new KsProblemHeuristic(SearchAlgorithm.BestFirstSearch, NeglectedConstrain.Integrality);
+                //KsProblemHeuristic ksh = new KsProblemHeuristic(SearchAlgorithm.DepthFirstSearch, NeglectedConstrain.Capacity);
                 //ksh.run_algorithm();
 
-                //KsProblemDynamic kspd = new KsProblemDynamic();
-                //kspd.Init();
-                //kspd.run_algorithm();
+                KsProblemDynamic kspd = new KsProblemDynamic();
+                kspd.Init();
+                kspd.run_algorithm();
 
                 //man.Run();
             } while (Console.ReadKey(true).Key != ConsoleKey.Escape);

@@ -18,6 +18,7 @@ namespace KnapsackProblem.HeuristicSol
     }
     enum KsProbelmFiles //the .dat files containing the knapsack problems
     {
+        Hp1,
         Flei,
         Hp3,
         Pb5,       
@@ -31,8 +32,9 @@ namespace KnapsackProblem.HeuristicSol
         private readonly SearchAlgorithm _searchAlgorithm;
         private readonly NeglectedConstrain _neglectedConstrain;        
         private string _chosenItems; //binary string representing if item x was chosen in the solution
-        private Node _best;
-        
+        private Node _bestLeaf;
+        private int _counter;
+
         public KsProblemHeuristic(SearchAlgorithm searchAlgorithm,NeglectedConstrain neglectedConstrain)
         {
             _chosenItems = "";            
@@ -42,22 +44,22 @@ namespace KnapsackProblem.HeuristicSol
 
         public void run_algorithm()
         {
-            var ksProbelms = Enum.GetValues(typeof(KsProbelmFiles)).Cast<KsProbelmFiles>().Select(x => x.ToString()).ToArray();
+            // run over all the problems given in a .dat files
+            var ksProbelms = Enum.GetValues(typeof(KsProbelmFiles)).Cast<KsProbelmFiles>()
+                                                    .Select(x => x.ToString()).ToArray();
             foreach (var problem in ksProbelms)
             {
                 _chosenItems = "";
-               ReadDataFromFile(problem + ".dat");
+                ReadDataFromFile(problem + ".dat");
                 switch (_neglectedConstrain)
                 {
                     case NeglectedConstrain.Capacity:
-                        _estimationBound = (uint) Weights.Sum(num => num);
-                        break;
+                        _estimationBound = (uint) Weights.Sum(num => num); break;
                     case NeglectedConstrain.Integrality:
                         BuildItemsList(true);
-                        _estimationBound = calc_estimate_neglecting_integrality();
-                        break;
+                        _estimationBound = calc_estimate_neglecting_integrality(); break;
                 }
-                _best = new Node(0, NumOfknapsacks, Capcities.ToArray(), 0, 0);
+                _bestLeaf = new Node(0, NumOfknapsacks, Capcities.ToArray(), 0, 0);
                 short[] rooms = new short[NumOfknapsacks];
                 Array.Copy(Capcities.ToArray(), rooms, NumOfknapsacks);
                 Node root = new Node(0, NumOfknapsacks, rooms, _estimationBound, 0);
@@ -77,44 +79,44 @@ namespace KnapsackProblem.HeuristicSol
         private uint calc_estimate_neglecting_integrality(string chosenItems = "")
         {
             double estimateBound = 0;
-            List<Item> items = new List<Item>();
-            int count = 0;
-            if (!chosenItems.Equals(""))
+            //avilableItems holds the current items according to the chosen items so far in the recursive search
+            List<Item> avilableItems = new List<Item>(); 
+            List<int> numbers = new List<int>();
+            if (!chosenItems.Equals("")) //no items were selected yet. add all items.
             {
                 var binaryNumbers = chosenItems.Replace(" ", "");
-                List<int> numbers = new List<int>();
                 foreach (var bin in binaryNumbers)
                 {
                     numbers.Add(Int32.Parse(bin.ToString()));
                 }            
-                count = numbers.Count;                
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < numbers.Count; i++)
                 {
                     if (numbers[i] == 1)
                     {
-                        items.Add(Items[i]);
+                        avilableItems.Add(Items[i]);
                     }
                 }
             }            
-            for (int i = count; i < NumOfItems; i++)
+            for (int i = numbers.Count; i < NumOfItems; i++) // add the rest of the items
             {
-                items.Add(Items[i]);
+                avilableItems.Add(Items[i]);
             }
-            var itemsSorted = items.OrderByDescending(x => x.DensitiesAvg);     
+            var itemsSorted = avilableItems.OrderByDescending(x => x.DensitiesAvg);     
             short[] rooms = new short[NumOfknapsacks];
             Array.Copy(Capcities.ToArray(), rooms, NumOfknapsacks);
             foreach (var item in itemsSorted)
             {
-                bool canBeAddToAllSacks = true;
+                bool canBeAddedToAllSacks = true;
+                //check if this item cab be added to all knapsacks
                 for (int j = 0; j < NumOfknapsacks; j++)
                 {
                     if (rooms[j] <item.Constrains[j])
                     {
-                        canBeAddToAllSacks = false;
+                        canBeAddedToAllSacks = false;
                         break;
                     }
                 }
-                if (canBeAddToAllSacks == true)
+                if (canBeAddedToAllSacks == true)
                 {
                     for (int j = 0; j < NumOfknapsacks; j++)
                     {
@@ -122,7 +124,7 @@ namespace KnapsackProblem.HeuristicSol
                     }
                     estimateBound += item.Weight;
                 }
-                else //add fraction
+                else //add a fraction of this item to all knapsacks
                 {
                     double fraction = Int16.MaxValue;
                     for (int j = 0; j < NumOfknapsacks; j++)
@@ -134,7 +136,7 @@ namespace KnapsackProblem.HeuristicSol
                         }
                     }
                     estimateBound += fraction;                        
-                    break; //stop because we filled up all the rooms
+                    break; //stop because we filled up at least one room
                 }
             }
             return (uint) estimateBound;
@@ -152,22 +154,28 @@ namespace KnapsackProblem.HeuristicSol
                     newRooms[i] = (short) (newRooms[i] - Constrains[i][root.Level]);
                 }
                 // allocation of the node's sons is exceuted only when necessary 
-                root.Left = new Node((root.Value + Weights[root.Level]), NumOfknapsacks, newRooms, root.Estimate, (byte)(root.Level + 1));
+                Node left = new Node((root.Value + Weights[root.Level]), NumOfknapsacks,
+                                        newRooms, root.Estimate, (byte)(root.Level + 1));
                 uint est = 0;
                 if (_neglectedConstrain.Equals(NeglectedConstrain.Integrality))
                 {
                     est = calc_estimate_neglecting_integrality(res +"0");
                 }
                 else est = (root.Estimate - Weights[root.Level]);
-                root.Right = new Node(root.Value, NumOfknapsacks, root.Rooms,est, (byte) (root.Level + 1));
-                DepthFirstSearch(root.Left ,res+ "1 ");
-                DepthFirstSearch(root.Right,res+ "0 ");
+                Node right = new Node(root.Value, NumOfknapsacks, root.Rooms,est, (byte) (root.Level + 1));
+                DepthFirstSearch(left ,res+ "1 ");
+                DepthFirstSearch(right,res+ "0 ");
             }
             else
             {
-                if (_best.Value < root.Value)
+                _counter++;
+                if (_counter%5000000 == 0)
                 {
-                    _best = new Node(root);
+                 Console.WriteLine(_counter);
+                }
+                if (_bestLeaf.Value < root.Value)
+                {
+                    _bestLeaf = new Node(root);
                     _chosenItems = string.Copy(res);
                 }
             }
@@ -178,7 +186,7 @@ namespace KnapsackProblem.HeuristicSol
             if (root.check_rooms() == false) return;
             if (root.Level < NumOfItems)
             {
-                if (root.Estimate >= _best.Estimate)
+                if (root.Estimate >= _bestLeaf.Estimate)
                 {
                     short[] newRooms = new short[NumOfknapsacks];
                     Array.Copy(root.Rooms, newRooms, NumOfknapsacks);
@@ -186,23 +194,24 @@ namespace KnapsackProblem.HeuristicSol
                     {
                         newRooms[i] = (short)(newRooms[i] - Constrains[i][root.Level]);
                     }
-                    root.Left = new Node((root.Value + Weights[root.Level]), NumOfknapsacks, newRooms, root.Estimate, (byte)(root.Level + 1));
+                    Node left = new Node((root.Value + Weights[root.Level]), NumOfknapsacks,
+                                            newRooms, root.Estimate, (byte)(root.Level + 1));
                     uint est = 0;
                     if (_neglectedConstrain.Equals(NeglectedConstrain.Integrality))
                     {
                         est = calc_estimate_neglecting_integrality(res + "0");
                     }
                     else est = (root.Estimate - Weights[root.Level]);
-                    root.Right = new Node(root.Value, NumOfknapsacks, root.Rooms, est, (byte)(root.Level + 1));
-                    BestFirstSearch(root.Left,res+ "1 ");
-                    BestFirstSearch(root.Right, res + "0 ");                    
+                    Node right = new Node(root.Value, NumOfknapsacks, root.Rooms, est, (byte)(root.Level + 1));
+                    BestFirstSearch(left,res+ "1 ");
+                    BestFirstSearch(right, res + "0 ");                    
                 }
             }
             else
             {
-                if (_best.Value < root.Value)
+                if (_bestLeaf.Value < root.Value)
                 {
-                    _best = new Node(root);
+                    _bestLeaf = new Node(root);
                     _chosenItems = res;
                 }
             }
@@ -210,14 +219,14 @@ namespace KnapsackProblem.HeuristicSol
         private void print_result_details()
         {
             Console.WriteLine("Best node:");
-            Console.WriteLine("Value: "+_best.Value);
+            Console.WriteLine("Value: "+_bestLeaf.Value);
             string rooms = "";
-            foreach (int room in _best.Rooms)
+            foreach (int room in _bestLeaf.Rooms)
             {
                 rooms += room + " ";
             }
             Console.WriteLine("Rooms: "+ rooms);
-            Console.WriteLine("Estimate: "+ _best.Estimate);
+            Console.WriteLine("Estimate: "+ _bestLeaf.Estimate);
             Console.WriteLine("Chosen items : "+ _chosenItems);
             Console.WriteLine("Optimum solution : "+ Opt+"\n");
         }

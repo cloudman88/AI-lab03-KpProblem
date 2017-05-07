@@ -184,6 +184,10 @@ namespace KnapsackProblem.Tools
                 }
                 else
                 {
+                    for (int j = 0; j < NumOfknapsacks; j++)
+                    {
+                        item.Constrains[j] = Constrains[j][i];
+                    }
                     item.Densities = null;
                 }
                 Items.Add(item);
