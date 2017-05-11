@@ -6,12 +6,71 @@ using System.Linq;
 
 namespace KnapsackProblem.Tools
 {
+    enum KsProbelmFiles //the .dat files containing the knapsack problems
+    {
+        Flei,
+        Hp1,
+        Hp2,
+        Pb1,
+        Pb2,
+        Pb4,
+        Pb5,
+        Pb6,
+        Pb7,
+        Pet2,
+        Pet3,
+        Pet4,
+        Pet5,
+        Pet6,
+        Pet7,
+        Sento1,
+        Sento2,
+        Weing1,
+        Weing2,
+        Weing3,
+        Weing4,
+        Weing5,
+        Weing6,
+        Weing7,
+        Weing8,
+        Weish01,
+        Weish02,
+        Weish03,
+        Weish04,
+        Weish05,
+        Weish06,
+        Weish07,
+        Weish08,
+        Weish09,
+        Weish10,
+        Weish11,
+        Weish12,
+        Weish13,
+        Weish14,
+        Weish15,
+        Weish16,
+        Weish17,
+        Weish18,
+        Weish19,
+        Weish20,
+        Weish21,
+        Weish22,
+        Weish23,
+        Weish24,
+        Weish25,
+        Weish26,
+        Weish27,
+        Weish28,
+        Weish29,
+        Weish30
+    }
+
     abstract class KsProblem
     {
         protected uint Opt;
         protected int NumOfknapsacks;
         protected int NumOfItems;
-        protected readonly List<short> Capcities;
+        protected readonly List<short> Capacities;
         protected readonly List<uint> Weights;
         protected readonly ObservableCollection<short[]> Constrains;
         protected readonly List<Item> Items;
@@ -20,13 +79,16 @@ namespace KnapsackProblem.Tools
         {
             Items = new List<Item>();
             Weights = new List<uint>();
-            Capcities = new List<short>();
+            Capacities = new List<short>();
             Constrains = new ObservableCollection<short[]>();
         }        
         public static void ReadDataFromFile(string filePath, ref int numOfknapsacks,
                             ref int numOfItems, List<uint> weights,List<short> capcities, 
                                 ObservableCollection<short[]> constrains, ref uint opt)
         {
+            capcities.Clear();
+            weights.Clear();
+            constrains.Clear();
             using (StreamReader sr = new StreamReader(filePath))
             {
                 string line;
@@ -119,12 +181,12 @@ namespace KnapsackProblem.Tools
 
                 //read capacities
                 count = 0;
-                Capcities.Clear();
+                Capacities.Clear();
                 while (count < NumOfknapsacks && (line = sr.ReadLine()) != null)
                 {
                     string[] data = line.Split(new string[] { "\t", " " }, StringSplitOptions.RemoveEmptyEntries);
                     short[] numbers = Array.ConvertAll(data, short.Parse);
-                    Capcities.AddRange(numbers);
+                    Capacities.AddRange(numbers);
                     count += numbers.Length;
                 }
 
@@ -195,3 +257,62 @@ namespace KnapsackProblem.Tools
         }
     }
 }
+
+//enum KsProbelmFiles //the .dat files containing the knapsack problems
+//{
+//    Flei,
+//    Hp1,
+//    Hp2,
+//    Pb1,
+//    Pb2,
+//    Pb4,
+//    Pb5,
+//    Pb6,
+//    Pb7,
+//    Pet2,
+//    Pet3,
+//    Pet4,
+//    Pet5,
+//    Pet6,
+//    Pet7,
+//    Sento1,
+//    Sento2,
+//    Weing1,
+//    Weing2,
+//    Weing3,
+//    Weing4,
+//    Weing5,
+//    Weing6,
+//    Weing7,
+//    Weing8,
+//    Weish01,
+//    Weish02,
+//    Weish03,
+//    Weish04,
+//    Weish05,
+//    Weish06,
+//    Weish07,
+//    Weish08,
+//    Weish09,
+//    Weish10,
+//    Weish11,
+//    Weish12,
+//    Weish13,
+//    Weish14,
+//    Weish15,
+//    Weish16,
+//    Weish17,
+//    Weish18,
+//    Weish19,
+//    Weish20,
+//    Weish21,
+//    Weish22,
+//    Weish23,
+//    Weish24,
+//    Weish25,
+//    Weish26,
+//    Weish27,
+//    Weish28,
+//    Weish29,
+//    Weish30
+//}

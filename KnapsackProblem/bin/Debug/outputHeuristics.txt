@@ -1,0 +1,4 @@
+Flei Value: 2139 Opt: 2139 Clock ticks: 99
+Pb1 Value: 3090 Opt: 3090 Clock ticks: 246
+Pb4 Value: 95168 Opt: 95168 Clock ticks: 134
+Pb5 Value: 2139 Opt: 2139 Clock ticks: 71

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using KnapsackProblem.GeneticsAlgorithms;
 using KnapsackProblem.Tools;
@@ -9,9 +11,9 @@ namespace KnapsackProblem.GeneticsSol
 {
     class KsProblemGenetics : GeneticsAlgorithms<KnapsackGen>
     {
-        private readonly uint _opt;
-        private readonly int _numOfknapsacks;
-        private readonly int _numOfItems;
+        private uint _opt;
+        private int _numOfknapsacks;
+        private int _numOfItems;
         private readonly List<short> _capcities;
         private readonly List<uint> _weights;
         private readonly List<Item> _items;
@@ -23,13 +25,14 @@ namespace KnapsackProblem.GeneticsSol
             _weights = new List<uint>();
             _items = new List<Item>();
             _constrains = new ObservableCollection<short[]>();
-            string filePath = "hp1.DAT";
-            KsProblem.ReadDataFromFile(filePath,ref _numOfknapsacks,ref _numOfItems ,_weights,_capcities,_constrains,ref _opt);
-            BuildItemsList();
+            //string filePath = "WEISH11.DAT";
+            //KsProblem.ReadDataFromFile(filePath,ref _numOfknapsacks,ref _numOfItems ,_weights,_capcities,_constrains,ref _opt);
+            //BuildItemsList();
         }
 
         private void BuildItemsList()
         {
+            _items.Clear();
             for (int i = 0; i < _numOfItems; i++)
             {
                 Item item = new Item()
@@ -53,6 +56,73 @@ namespace KnapsackProblem.GeneticsSol
                 KnapsackGen ksGen = new KnapsackGen(_numOfknapsacks,_capcities.ToArray(),_numOfItems,_items);
                 Population.Add(ksGen);
                 Buffer.Add(ksGen);
+            }
+        }
+
+        public override void run_algorithm()
+        {
+            string text = "";
+            var ksProbelms = Enum.GetValues(typeof(KsProbelmFiles)).Cast<KsProbelmFiles>()
+                                                    .Select(x => x.ToString()).ToArray();
+            foreach (var problem in ksProbelms)
+            {
+                double fitAvg = 0;
+                double timeAvg = 0;
+                int successCount = 0;
+                for (int j = 0; j < 10; j++)
+                {
+                    _numOfknapsacks = 0;
+                    _numOfItems = 0;
+                    BestGensHistory.Clear();
+                    HyperMutWasCalled = false;
+                    KsProblem.ReadDataFromFile(problem + ".dat", ref _numOfknapsacks, ref _numOfItems, _weights, _capcities, _constrains, ref _opt);
+                    BuildItemsList();
+                    init_population();
+                    long totalTicks = 0;
+                    int totalIteration = -1;
+                    Stopwatch stopWatch = new Stopwatch(); //stopwatch is used for both clock ticks and elasped time measuring
+                    stopWatch.Start();
+                    int i;
+                    for (i = 0; i < GaMaxiter; i++)
+                    {
+                        calc_fitness();      // calculate fitness
+                        sort_by_fitness();   // sort them
+                        var avg = calc_avg(); // calc avg
+                        var stdDev = calc_std_dev(avg); //calc std dev
+
+                        //calculate time differences                
+                        stopWatch.Stop();
+                        double ticks = (stopWatch.ElapsedTicks / (double)Stopwatch.Frequency) * 1000;
+                        totalTicks += (long)ticks;
+
+                        print_result_details(Population[0], avg, stdDev, i);  // print the best one, average and std dev by iteration number                
+                        if (LocalOptSearchEnabled == true) search_local_optima(avg, stdDev, i);
+
+                        stopWatch.Restart(); // restart timers for next iteration
+                        if ((Population)[0].Fitness == 0)
+                        {
+                            successCount++;
+                            totalIteration = i + 1; // save number of iteration                                                           
+                            break;
+                        }
+                        Mate();     // mate the population together
+                        swap_population_with_buffer();       // swap buffers
+                    }
+                    if (i == GaMaxiter)
+                    {                        
+                        Console.WriteLine("Failed to find solution in " + i + " iterations.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Iterations: " + totalIteration);
+                    }
+                    fitAvg += Population[0].Fitness;
+                    timeAvg += totalTicks;
+                    Console.WriteLine("\nTimig in milliseconds:");
+                    Console.WriteLine(problem+" Total Ticks " + totalTicks+"\n");
+                }
+                text += problem + " Value avg: " + (fitAvg/10) + " Opt: " + _opt + " Clock ticks avg: " + (timeAvg/10) +" rate: "+successCount+"/10"+ Environment.NewLine;
+                File.WriteAllText("output_genetics.txt", text);                
             }
         }
         protected override void calc_fitness()

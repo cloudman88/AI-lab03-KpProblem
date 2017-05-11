@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using KnapsackProblem.Tools;
 
@@ -16,21 +18,12 @@ namespace KnapsackProblem.HeuristicSol
         DepthFirstSearch,
         BestFirstSearch
     }
-    enum KsProbelmFiles //the .dat files containing the knapsack problems
-    {
-        Hp1,
-        Flei,
-        Hp3,
-        Pb5,       
-        Pet2,
-        Pet3,
-        Pet4,       
-    }
+   
     class KsProblemHeuristic : KsProblem
     {
         private uint _estimationBound;
         private readonly SearchAlgorithm _searchAlgorithm;
-        private readonly NeglectedConstrain _neglectedConstrain;        
+        private readonly NeglectedConstrain _neglectedConstrain;
         private string _chosenItems; //binary string representing if item x was chosen in the solution
         private Node _bestLeaf;
         private int _counter;
@@ -42,15 +35,20 @@ namespace KnapsackProblem.HeuristicSol
             _neglectedConstrain = neglectedConstrain;
         }
 
-        public void run_algorithm()
+        public void run_algorithm(string path)
         {
             // run over all the problems given in a .dat files
             var ksProbelms = Enum.GetValues(typeof(KsProbelmFiles)).Cast<KsProbelmFiles>()
                                                     .Select(x => x.ToString()).ToArray();
+            Stopwatch stopWatch = new Stopwatch();
+            string text = "";
+            
             foreach (var problem in ksProbelms)
             {
                 _chosenItems = "";
                 ReadDataFromFile(problem + ".dat");
+                Console.WriteLine("Probelm: " + problem);
+                _counter = 0;
                 switch (_neglectedConstrain)
                 {
                     case NeglectedConstrain.Capacity:
@@ -59,22 +57,30 @@ namespace KnapsackProblem.HeuristicSol
                         BuildItemsList(true);
                         _estimationBound = calc_estimate_neglecting_integrality(); break;
                 }
-                _bestLeaf = new Node(0, NumOfknapsacks, Capcities.ToArray(), 0, 0);
+                _bestLeaf = new Node(0, NumOfknapsacks, Capacities.ToArray(), 0, 0);
                 short[] rooms = new short[NumOfknapsacks];
-                Array.Copy(Capcities.ToArray(), rooms, NumOfknapsacks);
+                Array.Copy(Capacities.ToArray(), rooms, NumOfknapsacks);
                 Node root = new Node(0, NumOfknapsacks, rooms, _estimationBound, 0);
                 //solving while iterating between Branch and Bound
                 switch (_searchAlgorithm)
                 {
                     case SearchAlgorithm.BestFirstSearch:
+                        stopWatch.Start();
                         BestFirstSearch(root);
                         break;
                     case SearchAlgorithm.DepthFirstSearch:
+                        stopWatch.Start();
                         DepthFirstSearch(root);
                         break;
                 }
+                stopWatch.Stop();
+                double totalTicks = (stopWatch.ElapsedTicks / (double)Stopwatch.Frequency) * 1000;
+                stopWatch.Restart();
+                text += problem + " Value: " + _bestLeaf.Value + " Opt: " + Opt + " Clock ticks: "+ (long)totalTicks + Environment.NewLine;
                 print_result_details();
+                Console.WriteLine("Total Ticks " + (long)totalTicks+ "\n");
             }
+            File.WriteAllText(path, text);
         }
         private uint calc_estimate_neglecting_integrality(string chosenItems = "")
         {
@@ -103,7 +109,7 @@ namespace KnapsackProblem.HeuristicSol
             }
             var itemsSorted = avilableItems.OrderByDescending(x => x.DensitiesAvg);     
             short[] rooms = new short[NumOfknapsacks];
-            Array.Copy(Capcities.ToArray(), rooms, NumOfknapsacks);
+            Array.Copy(Capacities.ToArray(), rooms, NumOfknapsacks);
             foreach (var item in itemsSorted)
             {
                 bool canBeAddedToAllSacks = true;
@@ -209,6 +215,11 @@ namespace KnapsackProblem.HeuristicSol
             }
             else
             {
+                _counter++;
+                if (_counter % 5000000 == 0)
+                {
+                    Console.WriteLine(_counter);
+                }
                 if (_bestLeaf.Value < root.Value)
                 {
                     _bestLeaf = new Node(root);
@@ -228,7 +239,7 @@ namespace KnapsackProblem.HeuristicSol
             Console.WriteLine("Rooms: "+ rooms);
             Console.WriteLine("Estimate: "+ _bestLeaf.Estimate);
             Console.WriteLine("Chosen items : "+ _chosenItems);
-            Console.WriteLine("Optimum solution : "+ Opt+"\n");
+            Console.WriteLine("Optimum solution : "+ Opt);
         }
     }
 }

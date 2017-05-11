@@ -1,0 +1,4 @@
+Weing1 Value avg: 76 Opt: 141278 Clock ticks avg: 2071.1 rate: 8/10
+Weing2 Value avg: 978.2 Opt: 130883 Clock ticks avg: 1096 rate: 9/10
+Weish04 Value avg: 0 Opt: 4561 Clock ticks avg: 209.4 rate: 10/10
+Weish05 Value avg: 0 Opt: 4514 Clock ticks avg: 210.4 rate: 10/10
