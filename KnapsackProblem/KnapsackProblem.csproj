@@ -63,7 +63,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy "$(ProjectDir)ksProblems\*" "$(ProjectDir)$(OutDir)" /Y</PreBuildEvent>
+    <PreBuildEvent>xcopy "$(ProjectDir)ksProblems\*" "$(ProjectDir)$(OutDir)ksProblems\" /Y</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>

@@ -1,0 +1,3 @@
+Pet2 Value: 87061 Opt: 87061 Clock ticks: 6
+Pet3 Value: 4015 Opt: 4015 Clock ticks: 226
+Pet4 Value: 6120 Opt: 6120 Clock ticks: 6294

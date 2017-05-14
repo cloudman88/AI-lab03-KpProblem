@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -13,75 +14,71 @@ namespace KnapsackProblem.DynamicSol
 {
     class KsProblemDynamic : KsProblem
     {
-        private readonly ObservableCollection<int[,]> _tables;
-
         public KsProblemDynamic()
         {
-            string filePath = "pet3.DAT";
-            ReadDataFromFile(filePath);
-            _tables = new ObservableCollection<int[,]>();
-        }
 
-        public void Init()
-        {
-            for (int i = 0; i < NumOfknapsacks; i++)
-            {
-                int[,] table = new int[Capacities[i] + 1, NumOfItems + 1];
-                _tables.Add(table);
-            }
-            BuildItemsList(false);
-        }     
-
-        public void run_algorithm()
-        {
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-            var max = Capacities.Min();
-            int indexMax = -1;
-            for (int i = 0; i < Capacities.Count; i++)
-            {
-                if (max <= Capacities[i])
+        }  
+        public void run_algorithm(string problem)
+        {             
+                ReadDataFromFile(problem);
+                BuildItemsList(false);
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
+                var max = Capacities.Min();
+                int indexMax = -1;
+                for (int i = 0; i < Capacities.Count; i++)
                 {
-                    max = Capacities[i];
-                    indexMax = i;
-                }
-            }
-
-            for (int j = 1; j <= NumOfItems; j++)
-            {
-                for (int k = 0; k <= Capacities[indexMax]; k++)
-                {
-                    if (j==4 && k >280)
+                    if (max <= Capacities[i])
                     {
-                        var x = 0;
-                    }
-                    var table = _tables[indexMax];
-                    bool result = CanAddItemToAllSacks(k, j);
-                    if (result == true)
-                    {
-                        var previousResult = table[k, j - 1];
-                        var plusItem = Items[j - 1].Weight + table[k - Items[j - 1].Constrains[indexMax], j - 1];
-                        table[k, j] = (int)Math.Max(previousResult, plusItem);
-                    }
-                    else
-                    {
-                        table[k, j] = table[k, j - 1];
+                        max = Capacities[i];
+                        indexMax = i;
                     }
                 }
-            }
-            stopWatch.Stop();
-            double totalTicks = (stopWatch.ElapsedTicks / (double)Stopwatch.Frequency) * 1000;
-            for (int j = 0; j <= Capacities[indexMax]; j++)
-            {
-                for (int i = 0; i <= NumOfItems; i++)
+                int[,] table = new int[Capacities[indexMax]+1,NumOfItems+1]; 
+                for (int j = 1; j <= NumOfItems; j++)
                 {
-                    Console.Write(_tables[indexMax][j, i] + " ");
+                    for (int k = 0; k <= Capacities[indexMax]; k++)
+                    {
+                        bool result = CanAddItemToAllSacks(k, j);
+                        if (result == true)
+                        {
+                            var previousResult = table[k, j - 1];
+                            var plusItem = Items[j - 1].Weight + table[k - Items[j - 1].Constrains[indexMax], j - 1];
+                            table[k, j] = (int) Math.Max(previousResult, plusItem);
+                        }
+                        else
+                        {
+                            table[k, j] = table[k, j - 1];
+                        }
+                    }
                 }
-                Console.WriteLine(" ");
-            }
-            print_result_details();
-            print_chosen_items(_tables[indexMax],indexMax);
-            Console.WriteLine("Total Ticks " + (long)totalTicks);
+                stopWatch.Stop();
+                double totalTicks = (stopWatch.ElapsedTicks/(double) Stopwatch.Frequency)*1000;
+                var best =table.Cast<int>().Max();
+                for (int j = 0; j <= Capacities[indexMax]; j++)
+                {
+                    for (int i = 0; i <= NumOfItems; i++)
+                    {
+                        Console.Write(table[j, i] + " ");
+                    }
+                    Console.WriteLine(" ");
+                }
+                Console.WriteLine("Best Value:"+best);            
+                print_result_details();
+                int row = Capacities[indexMax];
+                if (table[row, Items.Count] == 0)
+                {
+                    for (int i = Capacities[indexMax]-1; i > 0; i--)
+                    {
+                        if (table[i, Items.Count] != 0)
+                        {
+                            row = i;
+                            break;
+                        }
+                    }
+                }
+                print_chosen_items(table, indexMax, row);
+                Console.WriteLine("Total Ticks " + (long) totalTicks);            
         }
 
         private bool CanAddItemToAllSacks(int k, int j)
@@ -107,10 +104,9 @@ namespace KnapsackProblem.DynamicSol
             //print_chosen_items();
         }
 
-        private void print_chosen_items(int[,] table,int chosenIndex)
+        private void print_chosen_items(int[,] table,int chosenIndex,int row)
         {
             string res = "";
-            var row = Capacities[chosenIndex];
             var col = Items.Count;
             while (col > 0)
             {

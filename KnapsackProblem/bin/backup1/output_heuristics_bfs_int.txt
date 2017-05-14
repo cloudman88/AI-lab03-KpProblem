@@ -1,0 +1,10 @@
+Hp1 Value: 3040 Opt: 3418 Clock ticks: 2
+Pb1 Value: 2897 Opt: 3090 Clock ticks: 18
+Pb4 Value: 85097 Opt: 95168 Clock ticks: 11
+Pet5 Value: 11630 Opt: 12400 Clock ticks: 972
+Weing2 Value: 112409 Opt: 130883 Clock ticks: 156
+Weing3 Value: 73759 Opt: 95677 Clock ticks: 19
+Weing4 Value: 117497 Opt: 119337 Clock ticks: 170
+Weing5 Value: 71620 Opt: 98796 Clock ticks: 11
+Weing6 Value: 117732 Opt: 130623 Clock ticks: 51
+Weing7 Value: 1090427 Opt: 1095445 Clock ticks: 17

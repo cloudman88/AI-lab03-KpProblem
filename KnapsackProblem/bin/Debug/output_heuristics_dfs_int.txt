@@ -1,0 +1,4 @@
+Hp1 Value: 3418 Opt: 3418 Clock ticks: 1597836
+Pb1 Value: 3090 Opt: 3090 Clock ticks: 727633
+Pb4 Value: 95168 Opt: 95168 Clock ticks: 810058
+Pet5 Value: 12400 Opt: 12400 Clock ticks: 2293176

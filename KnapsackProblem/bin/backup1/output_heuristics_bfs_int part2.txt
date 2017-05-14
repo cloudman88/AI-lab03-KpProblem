@@ -1,0 +1,7 @@
+Flei Value: 1874 Opt: 2139 Clock ticks: 2
+Hp2 Value: 2528 Opt: 3186 Clock ticks: 5
+Pb2 Value: 2638 Opt: 3186 Clock ticks: 3
+Pb5 Value: 1874 Opt: 2139 Clock ticks: 13
+Pb6 Value: 506 Opt: 776 Clock ticks: 118
+Pb7 Value: 841 Opt: 1035 Clock ticks: 45
+Pet6 Value: 10230 Opt: 10618 Clock ticks: 984

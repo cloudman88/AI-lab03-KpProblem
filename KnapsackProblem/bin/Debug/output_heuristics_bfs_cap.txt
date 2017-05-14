@@ -1,0 +1,2 @@
+Flei Value: 2139 Opt: 2139 Clock ticks: 398
+Hp1 Value: 3418 Opt: 3418 Clock ticks: 417

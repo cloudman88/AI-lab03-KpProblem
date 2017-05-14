@@ -1,0 +1,4 @@
+Pet2 Value: 83369 Opt: 87061 Clock ticks: 1
+Pet3 Value: 3945 Opt: 4015 Clock ticks: 4
+Pet4 Value: 5710 Opt: 6120 Clock ticks: 123
+Weing1 Value: 126887 Opt: 141278 Clock ticks: 287

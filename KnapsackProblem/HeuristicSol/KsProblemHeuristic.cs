@@ -26,7 +26,7 @@ namespace KnapsackProblem.HeuristicSol
         private readonly NeglectedConstrain _neglectedConstrain;
         private string _chosenItems; //binary string representing if item x was chosen in the solution
         private Node _bestLeaf;
-        private int _counter;
+        private double _counter;
 
         public KsProblemHeuristic(SearchAlgorithm searchAlgorithm,NeglectedConstrain neglectedConstrain)
         {
@@ -37,50 +37,40 @@ namespace KnapsackProblem.HeuristicSol
 
         public void run_algorithm(string path)
         {
-            // run over all the problems given in a .dat files
-            var ksProbelms = Enum.GetValues(typeof(KsProbelmFiles)).Cast<KsProbelmFiles>()
-                                                    .Select(x => x.ToString()).ToArray();
             Stopwatch stopWatch = new Stopwatch();
-            string text = "";
-            
-            foreach (var problem in ksProbelms)
+            _chosenItems = "";
+            ReadDataFromFile(path);
+            Console.WriteLine("Probelm: " + path);
+            _counter = 0;
+            switch (_neglectedConstrain)
             {
-                _chosenItems = "";
-                ReadDataFromFile(problem + ".dat");
-                Console.WriteLine("Probelm: " + problem);
-                _counter = 0;
-                switch (_neglectedConstrain)
-                {
-                    case NeglectedConstrain.Capacity:
-                        _estimationBound = (uint) Weights.Sum(num => num); break;
-                    case NeglectedConstrain.Integrality:
-                        BuildItemsList(true);
-                        _estimationBound = calc_estimate_neglecting_integrality(); break;
-                }
-                _bestLeaf = new Node(0, NumOfknapsacks, Capacities.ToArray(), 0, 0);
-                short[] rooms = new short[NumOfknapsacks];
-                Array.Copy(Capacities.ToArray(), rooms, NumOfknapsacks);
-                Node root = new Node(0, NumOfknapsacks, rooms, _estimationBound, 0);
-                //solving while iterating between Branch and Bound
-                switch (_searchAlgorithm)
-                {
-                    case SearchAlgorithm.BestFirstSearch:
-                        stopWatch.Start();
-                        BestFirstSearch(root);
-                        break;
-                    case SearchAlgorithm.DepthFirstSearch:
-                        stopWatch.Start();
-                        DepthFirstSearch(root);
-                        break;
-                }
-                stopWatch.Stop();
-                double totalTicks = (stopWatch.ElapsedTicks / (double)Stopwatch.Frequency) * 1000;
-                stopWatch.Restart();
-                text += problem + " Value: " + _bestLeaf.Value + " Opt: " + Opt + " Clock ticks: "+ (long)totalTicks + Environment.NewLine;
-                print_result_details();
-                Console.WriteLine("Total Ticks " + (long)totalTicks+ "\n");
+                case NeglectedConstrain.Capacity:
+                    _estimationBound = (uint) Weights.Sum(num => num); break;
+                case NeglectedConstrain.Integrality:
+                    BuildItemsList(true);
+                    _estimationBound = calc_estimate_neglecting_integrality(); break;
             }
-            File.WriteAllText(path, text);
+            _bestLeaf = new Node(0, NumOfknapsacks, Capacities.ToArray(), 0, 0);
+            short[] rooms = new short[NumOfknapsacks];
+            Array.Copy(Capacities.ToArray(), rooms, NumOfknapsacks);
+            Node root = new Node(0, NumOfknapsacks, rooms, _estimationBound, 0);
+            //solving while iterating between Branch and Bound
+            switch (_searchAlgorithm)
+            {
+                case SearchAlgorithm.BestFirstSearch:
+                    stopWatch.Start();
+                    BestFirstSearch(root);
+                    break;
+                case SearchAlgorithm.DepthFirstSearch:
+                    stopWatch.Start();
+                    DepthFirstSearch(root);
+                    break;
+            }
+            stopWatch.Stop();
+            double totalTicks = (stopWatch.ElapsedTicks / (double)Stopwatch.Frequency) * 1000;
+            stopWatch.Restart();
+            print_result_details();
+            Console.WriteLine("Total Ticks " + (long)totalTicks+ "\n");            
         }
         private uint calc_estimate_neglecting_integrality(string chosenItems = "")
         {
